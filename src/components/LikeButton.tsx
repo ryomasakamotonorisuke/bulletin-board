@@ -59,7 +59,9 @@ export default function LikeButton({ postId, initialLikeCount }: LikeButtonProps
     }
   }
 
-  const handleLike = async () => {
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation() // カードのクリックイベントに伝播しないようにする
+    
     if (!user) {
       alert('いいねするにはログインが必要です')
       return
