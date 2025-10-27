@@ -184,7 +184,7 @@ export function usePosts() {
 
       setPosts(prev => prev.map(p => 
         p.id === postId 
-          ? { ...p, title: postData.title, content: postData.content, image_url: imageUrls[0], image_urls: imageUrls }
+          ? { ...p, title: postData.title, content: postData.content || null, image_url: imageUrls[0], image_urls: imageUrls }
           : p
       ))
       return { data: null, error: null }

@@ -101,13 +101,13 @@ export default function PostManagement() {
                     <div className="flex-shrink-0 h-8 w-8">
                       <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
                         <span className="text-xs font-medium text-indigo-600">
-                          {post.profiles?.full_name?.charAt(0) || post.profiles?.username?.charAt(0) || 'U'}
+                          {post.profiles?.[0]?.full_name?.charAt(0) || post.profiles?.[0]?.username?.charAt(0) || 'U'}
                         </span>
                       </div>
                     </div>
                     <div className="ml-3">
                       <div className="text-sm font-medium text-gray-900 flex items-center">
-                        {post.profiles?.full_name || post.profiles?.username || '不明なユーザー'}
+                        {post.profiles?.[0]?.full_name || post.profiles?.[0]?.username || '不明なユーザー'}
                         {post.is_admin && (
                           <Shield className="w-3 h-3 ml-1 text-indigo-600" />
                         )}

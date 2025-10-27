@@ -47,11 +47,7 @@ export interface AdminPostStats {
     full_name: string | null
     username: string | null
     is_admin?: boolean
-  }[] | {
-    full_name: string | null
-    username: string | null
-    is_admin?: boolean
-  }
+  }[]
 }
 
 export interface CreateAdminUserData {
