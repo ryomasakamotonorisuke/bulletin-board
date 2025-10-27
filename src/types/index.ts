@@ -46,6 +46,11 @@ export interface AdminPostStats {
   profiles?: {
     full_name: string | null
     username: string | null
+    is_admin?: boolean
+  }[] | {
+    full_name: string | null
+    username: string | null
+    is_admin?: boolean
   }
 }
 
