@@ -9,11 +9,13 @@ interface AuthContextType {
   user: AppUser | null
   session: Session | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: any }>
+  requiresPasswordChange: boolean
+  signIn: (user_id: string, password: string) => Promise<{ error: any }>
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<{ error: any }>
   updatePassword: (password: string) => Promise<{ error: any }>
+  markPasswordChanged: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -22,6 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [requiresPasswordChange, setRequiresPasswordChange] = useState(false)
 
   useEffect(() => {
     // 1秒で強制的にローディング終了（軽量化）
@@ -36,17 +39,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (session?.user) {
           setSession(session)
-          // プロフィール取得をスキップして軽量化
+          // プロフィール情報を取得
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
+          
           setUser({
             id: session.user.id,
-            email: session.user.email!,
-            username: null,
-            full_name: session.user.user_metadata?.full_name || null,
-            avatar_url: session.user.user_metadata?.avatar_url || null,
-            role: 'viewer' as const,
-            is_admin: false,
-            is_employee: false,
+            email: session.user.email,
+            username: profile?.username || null,
+            full_name: profile?.full_name || session.user.user_metadata?.full_name || null,
+            avatar_url: profile?.avatar_url || session.user.user_metadata?.avatar_url || null,
+            user_id: profile?.user_id || null,
+            role: (profile?.role as any) || 'viewer',
+            is_admin: profile?.is_admin || false,
+            is_employee: profile?.is_employee || false,
+            is_active: profile?.is_active ?? true,
+            password_changed: profile?.password_changed ?? true,
           })
+          
+          // 初回ログイン時チェック
+          setRequiresPasswordChange(profile?.password_changed === false)
         } else {
           setUser(null)
         }
@@ -66,16 +81,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session)
         
         if (session?.user) {
+          // プロフィール情報を取得
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
+          
           setUser({
             id: session.user.id,
-            email: session.user.email!,
-            username: null,
-            full_name: session.user.user_metadata?.full_name || null,
-            avatar_url: session.user.user_metadata?.avatar_url || null,
-            role: 'viewer' as const,
-            is_admin: false,
-            is_employee: false,
+            email: session.user.email,
+            username: profile?.username || null,
+            full_name: profile?.full_name || session.user.user_metadata?.full_name || null,
+            avatar_url: profile?.avatar_url || session.user.user_metadata?.avatar_url || null,
+            user_id: profile?.user_id || null,
+            role: (profile?.role as any) || 'viewer',
+            is_admin: profile?.is_admin || false,
+            is_employee: profile?.is_employee || false,
+            is_active: profile?.is_active ?? true,
+            password_changed: profile?.password_changed ?? true,
           })
+          
+          // 初回ログイン時チェック
+          setRequiresPasswordChange(profile?.password_changed === false)
         } else {
           setUser(null)
         }
@@ -89,9 +117,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (user_id: string, password: string) => {
+    // user_idをメールアドレスとして扱う（Supabase Auth互換）
     const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
+      email: user_id,
       password,
     })
     
@@ -99,23 +128,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: authError }
     }
 
-    // ログイン成功後、社員チェック
+    // ログイン成功後、プロフィールチェック
     const { data: { session } } = await supabase.auth.getSession()
     if (session?.user) {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('is_employee, is_admin')
+        .select('is_employee, is_admin, is_active, password_changed')
         .eq('id', session.user.id)
         .single()
 
-      // 社員でない場合（またはプロフィールが存在しない場合）
-      if (!profile || !profile.is_employee) {
+      // アクティブでない場合
+      if (profile && !profile.is_active) {
         await supabase.auth.signOut()
         return { 
           error: { 
-            message: 'このアプリケーションは社員のみが利用できます。管理者にお問い合わせください。' 
+            message: 'このアカウントは無効化されています。管理者にお問い合わせください。' 
           } 
         }
+      }
+
+      // 初回ログイン時パスワード変更が必要
+      if (profile && !profile.password_changed) {
+        setRequiresPasswordChange(true)
       }
     }
 
@@ -150,18 +184,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { error } = await supabase.auth.updateUser({
       password: password
     })
+    
+    if (!error && user) {
+      // パスワード変更フラグを更新
+      await supabase
+        .from('profiles')
+        .update({ password_changed: true })
+        .eq('id', user.id)
+      
+      setRequiresPasswordChange(false)
+      setUser({ ...user, password_changed: true })
+    }
+    
     return { error }
+  }
+
+  const markPasswordChanged = async () => {
+    if (user) {
+      await supabase
+        .from('profiles')
+        .update({ password_changed: true })
+        .eq('id', user.id)
+      
+      setRequiresPasswordChange(false)
+      setUser({ ...user, password_changed: true })
+    }
   }
 
   const value = {
     user,
     session,
     loading,
+    requiresPasswordChange,
     signIn,
     signUp,
     signOut,
     resetPassword,
     updatePassword,
+    markPasswordChanged,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -3,11 +3,13 @@
 import { useState } from 'react'
 import { useAdminUsers } from '@/hooks/useAdminUsers'
 import { AdminUser } from '@/types'
-import { Users, Shield, ShieldOff, Trash2, Calendar, Mail } from 'lucide-react'
+import { Users, Shield, ShieldOff, Trash2, Calendar, Mail, Download, Upload, ToggleLeft, ToggleRight } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 export default function UserManagement() {
   const { users, loading, error, toggleAdminStatus, deleteUser } = useAdminUsers()
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null)
+  const [togglingUserId, setTogglingUserId] = useState<string | null>(null)
 
   const handleToggleAdmin = async (userId: string, currentStatus: boolean) => {
     const result = await toggleAdminStatus(userId, !currentStatus)
@@ -28,6 +30,72 @@ export default function UserManagement() {
     if (!result.success) {
       alert(result.message)
     }
+  }
+
+  const handleToggleActive = async (userId: string, currentStatus: boolean) => {
+    setTogglingUserId(userId)
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_active: !currentStatus })
+        .eq('id', userId)
+
+      if (error) {
+        alert(error.message)
+      }
+    } catch (err: any) {
+      alert(err.message || 'エラーが発生しました')
+    } finally {
+      setTogglingUserId(null)
+    }
+  }
+
+  const handleExportCSV = () => {
+    const headers = ['ユーザーID', '氏名', 'ユーザー名', 'メール', '管理者', 'アクティブ', '社員番号', '部署', '登録日']
+    const rows = users.map(user => [
+      user.user_id || user.email || '',
+      user.full_name || '',
+      user.username || '',
+      user.email || '',
+      user.is_admin ? 'はい' : 'いいえ',
+      user.is_active ? 'はい' : 'いいえ',
+      user.employee_id || '',
+      user.department || '',
+      user.created_at
+    ])
+
+    const csv = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n')
+
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `users_${new Date().toISOString().split('T')[0]}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleImportCSV = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const text = await file.text()
+    const lines = text.split('\n').filter(line => line.trim())
+    const headers = lines[0].split(',')
+    
+    // 簡単なバリデーション
+    const requiredHeaders = ['ユーザーID', '氏名', 'パスワード']
+    const hasRequired = requiredHeaders.every(h => headers.includes(h))
+    
+    if (!hasRequired) {
+      alert('CSVファイルの形式が正しくありません。必須カラム: ' + requiredHeaders.join(', '))
+      return
+    }
+
+    alert('CSVインポート機能は現在開発中です')
   }
 
   const formatDate = (dateString: string) => {
@@ -65,10 +133,26 @@ export default function UserManagement() {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center mb-6">
-        <Users className="w-6 h-6 text-indigo-600 mr-2" />
-        <h2 className="text-xl font-semibold text-gray-900">ユーザー管理</h2>
-        <span className="ml-4 text-sm text-gray-500">({users.length}人)</span>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <Users className="w-6 h-6 text-indigo-600 mr-2" />
+          <h2 className="text-xl font-semibold text-gray-900">ユーザー管理</h2>
+          <span className="ml-4 text-sm text-gray-500">({users.length}人)</span>
+        </div>
+        <div className="flex gap-2">
+          <label className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 cursor-pointer">
+            <Upload className="w-4 h-4 mr-2" />
+            CSVインポート
+            <input type="file" accept=".csv" onChange={handleImportCSV} className="hidden" />
+          </label>
+          <button
+            onClick={handleExportCSV}
+            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            CSVエクスポート
+          </button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -77,6 +161,9 @@ export default function UserManagement() {
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 ユーザー
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                状態
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 管理者権限
@@ -122,10 +209,33 @@ export default function UserManagement() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button
+                    onClick={() => handleToggleActive(user.id, user.is_active)}
+                    disabled={togglingUserId === user.id}
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      user.is_active
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    } disabled:opacity-50`}
+                  >
+                    {user.is_active ? (
+                      <>
+                        <ToggleRight className="w-3 h-3 mr-1" />
+                        アクティブ
+                      </>
+                    ) : (
+                      <>
+                        <ToggleLeft className="w-3 h-3 mr-1" />
+                        無効
+                      </>
+                    )}
+                  </button>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <button
                     onClick={() => handleToggleAdmin(user.id, user.is_admin)}
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       user.is_admin
-                        ? 'bg-green-100 text-green-800'
+                        ? 'bg-blue-100 text-blue-800'
                         : 'bg-gray-100 text-gray-800'
                     }`}
                   >
@@ -137,7 +247,7 @@ export default function UserManagement() {
                     ) : (
                       <>
                         <ShieldOff className="w-3 h-3 mr-1" />
-                        一般ユーザー
+                        一般
                       </>
                     )}
                   </button>

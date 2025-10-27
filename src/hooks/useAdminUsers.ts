@@ -132,18 +132,19 @@ export function useAdminUsers() {
   }
 
   const createUser = async (userData: {
-    email: string
+    user_id: string
     password: string
     full_name: string
     username?: string
-    role?: string
     is_admin?: boolean
     is_employee?: boolean
+    employee_id?: string
+    department?: string
   }): Promise<ApiResult<any>> => {
     try {
-      // Supabase Admin APIを使用してユーザーを作成
+      // Supabase Admin APIを使用してユーザーを作成（user_idをメールとして扱う）
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: userData.email,
+        email: userData.user_id,
         password: userData.password,
         email_confirm: true,
         user_metadata: {
@@ -160,11 +161,15 @@ export function useAdminUsers() {
         .from('profiles')
         .insert({
           id: authData.user.id,
-          username: userData.username || userData.email.split('@')[0],
+          user_id: userData.user_id,
+          username: userData.username || userData.user_id,
           full_name: userData.full_name,
-          is_admin: userData.is_admin || userData.role === 'admin' || false,
+          is_admin: userData.is_admin || false,
           is_employee: userData.is_employee !== undefined ? userData.is_employee : true,
-          role: userData.role || 'viewer'
+          employee_id: userData.employee_id,
+          department: userData.department,
+          is_active: true,
+          password_changed: false // 初回ログイン時に強制的に変更
         })
 
       if (profileError) {
@@ -174,14 +179,7 @@ export function useAdminUsers() {
       // ユーザーリストを更新
       await fetchUsers()
 
-      const roleNames: Record<string, string> = {
-        admin: '管理者',
-        poster: '投稿者',
-        viewer: '閲覧者',
-        store: '店舗'
-      }
-      const roleName = roleNames[userData.role || 'viewer'] || 'ユーザー'
-      return { success: true, message: `${roleName}を作成しました` }
+      return { success: true, message: 'ユーザーを作成しました（初回ログイン時にパスワード変更が必要です）' }
     } catch (err: any) {
       return { success: false, message: 'ユーザーの作成に失敗しました' }
     }

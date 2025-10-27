@@ -5,15 +5,15 @@ import { useAdmin } from '@/hooks/useAdmin'
 import CreateAdminForm from '@/components/admin/CreateAdminForm'
 import UserManagement from '@/components/admin/UserManagement'
 import PostManagement from '@/components/admin/PostManagement'
-import InvitationForm from '@/components/admin/InvitationForm'
-import { Shield, Users, FileText, ArrowLeft, Mail } from 'lucide-react'
+import Dashboard from '@/components/admin/Dashboard'
+import { Shield, Users, FileText, ArrowLeft, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 
 export default function AdminPage() {
   const { user, loading: authLoading } = useAuth()
   const { isAdmin, loading: adminLoading, error } = useAdmin()
-  const [activeTab, setActiveTab] = useState<'create' | 'users' | 'posts' | 'invite'>('create')
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'create' | 'users' | 'posts' | 'invite'>('dashboard')
 
   if (authLoading || adminLoading) {
     return (
@@ -97,6 +97,17 @@ export default function AdminPage() {
         <div className="mb-6">
           <nav className="flex space-x-8">
             <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'dashboard'
+                  ? 'border-indigo-500 text-indigo-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4 inline mr-1" />
+              ダッシュボード
+            </button>
+            <button
               onClick={() => setActiveTab('create')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'create'
@@ -129,26 +140,15 @@ export default function AdminPage() {
               <FileText className="w-4 h-4 inline mr-1" />
               投稿管理
             </button>
-            <button
-              onClick={() => setActiveTab('invite')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'invite'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              <Mail className="w-4 h-4 inline mr-1" />
-              ユーザー招待
-            </button>
           </nav>
         </div>
 
         {/* タブコンテンツ */}
         <div className="space-y-6">
+          {activeTab === 'dashboard' && <Dashboard />}
           {activeTab === 'create' && <CreateAdminForm />}
           {activeTab === 'users' && <UserManagement />}
           {activeTab === 'posts' && <PostManagement />}
-          {activeTab === 'invite' && <InvitationForm />}
         </div>
       </main>
     </div>

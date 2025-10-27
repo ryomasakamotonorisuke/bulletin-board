@@ -10,12 +10,13 @@ import PostForm from '@/components/PostForm'
 import ModernLoginForm from '@/components/auth/ModernLoginForm'
 import SignUpForm from '@/components/auth/SignUpForm'
 import ModernForgotPasswordForm from '@/components/auth/ModernForgotPasswordForm'
+import PasswordChangeRequired from '@/components/auth/PasswordChangeRequired'
 import PopularPosts from '@/components/PopularPosts'
 import { Search, Filter, Store, Users, Plus } from 'lucide-react'
 import { canCreateUserPost, canCreateStorePost, getRoleDisplayName } from '@/lib/permissions'
 
 export default function Home() {
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading: authLoading, requiresPasswordChange } = useAuth()
   const { posts, loading: postsLoading, error, fetchPostsSimple } = usePosts()
   const { userRole, loading: roleLoading } = useUserRole()
   const [showPostForm, setShowPostForm] = useState(false)
@@ -97,6 +98,11 @@ export default function Home() {
         )}
       </>
     )
+  }
+
+  // 初回ログイン時パスワード変更を強制
+  if (requiresPasswordChange) {
+    return <PasswordChangeRequired />
   }
 
   return (

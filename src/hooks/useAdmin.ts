@@ -101,14 +101,13 @@ export function useAdmin() {
   // 管理者ユーザーを作成（軽量化）
   const createAdminUser = async (userData: CreateAdminUserData): Promise<{ error: string | null }> => {
     try {
-      // 認証ユーザーを作成
+      // 認証ユーザーを作成（user_idをメールとして扱う）
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: userData.email,
+        email: userData.user_id,
         password: userData.password,
         email_confirm: true,
         user_metadata: {
           full_name: userData.full_name,
-          is_admin: true
         }
       })
 
@@ -121,9 +120,15 @@ export function useAdmin() {
         .from('profiles')
         .insert({
           id: authData.user.id,
-          username: userData.username || userData.email.split('@')[0],
+          user_id: userData.user_id,
+          username: userData.username || userData.user_id,
           full_name: userData.full_name,
-          is_admin: true
+          is_admin: userData.is_admin || false,
+          is_employee: userData.is_employee !== undefined ? userData.is_employee : true,
+          employee_id: userData.employee_id,
+          department: userData.department,
+          is_active: true,
+          password_changed: false
         })
 
       if (profileError) {

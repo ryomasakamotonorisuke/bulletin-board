@@ -10,7 +10,7 @@ interface ModernLoginFormProps {
 }
 
 export default function ModernLoginForm({ onForgotPassword, onSignUp }: ModernLoginFormProps) {
-  const [email, setEmail] = useState('')
+  const [user_id, setUser_id] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -22,7 +22,7 @@ export default function ModernLoginForm({ onForgotPassword, onSignUp }: ModernLo
     setLoading(true)
     setError('')
 
-    const { error: signInError } = await signIn(email, password)
+    const { error: signInError } = await signIn(user_id, password)
     
     if (signInError) {
       setError(signInError.message)
@@ -126,25 +126,25 @@ export default function ModernLoginForm({ onForgotPassword, onSignUp }: ModernLo
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* メール */}
+            {/* ユーザーID */}
             <div>
               <label className="block text-sm font-bold mb-2 japanese" style={{ color: '#011623' }}>
-                メールアドレス
+                ユーザーID
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5" style={{ color: '#F69111' }} />
                 </div>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  value={user_id}
+                  onChange={(e) => setUser_id(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-all"
                   style={{
                     borderColor: '#FFC700',
                     backgroundColor: 'rgba(250, 253, 255, 0.8)'
                   }}
-                  placeholder="your@email.com"
+                  placeholder="ユーザーIDを入力"
                   required
                 />
               </div>
@@ -212,22 +212,11 @@ export default function ModernLoginForm({ onForgotPassword, onSignUp }: ModernLo
             </button>
           </form>
 
-          {/* 新規登録 */}
+          {/* 管理者連絡 */}
           <div className="mt-8 text-center">
-            <p className="text-gray-600 mb-3 japanese">
-              アカウントをお持ちでないですか？
+            <p className="text-gray-600 text-sm japanese">
+              アカウントが必要な場合は管理者にお問い合わせください
             </p>
-            <button
-              onClick={onSignUp}
-              className="w-full py-3 rounded-2xl font-bold border-2 transition-all hover:scale-105 japanese"
-              style={{
-                borderColor: '#FFC700',
-                color: '#011623',
-                backgroundColor: 'transparent'
-              }}
-            >
-              新規登録
-            </button>
           </div>
         </div>
       </div>
