@@ -128,7 +128,7 @@ export default function PostCard({ post }: PostCardProps) {
             {post.profiles?.avatar_url ? (
               <img
                 src={post.profiles.avatar_url}
-                alt={post.profiles.full_name || post.profiles.username}
+                alt={post.profiles.full_name || post.profiles.username || ''}
                 className="w-12 h-12 rounded-full object-cover"
               />
             ) : (
