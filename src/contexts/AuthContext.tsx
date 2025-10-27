@@ -43,6 +43,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             username: null,
             full_name: session.user.user_metadata?.full_name || null,
             avatar_url: session.user.user_metadata?.avatar_url || null,
+            role: 'viewer' as const,
+            is_admin: false,
+            is_employee: false,
           })
         } else {
           setUser(null)
