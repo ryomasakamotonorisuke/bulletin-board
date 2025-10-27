@@ -39,12 +39,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (session?.user) {
           setSession(session)
-          // プロフィール情報を取得
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
+          // プロフィール情報を取得（エラーハンドリング）
+          let profile = null
+          try {
+            const { data } = await supabase
+              .from('profiles')
+              .select('username, full_name, avatar_url, user_id, role, is_admin, is_employee, is_active, password_changed')
+              .eq('id', session.user.id)
+              .single()
+            profile = data
+          } catch (err) {
+            console.log('Profile fetch error, using defaults:', err)
+          }
           
           setUser({
             id: session.user.id,
@@ -56,8 +62,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             role: (profile?.role as any) || 'viewer',
             is_admin: profile?.is_admin || false,
             is_employee: profile?.is_employee || false,
-            is_active: profile?.is_active ?? true,
-            password_changed: profile?.password_changed ?? true,
+            is_active: profile?.is_active !== undefined ? profile.is_active : true,
+            password_changed: profile?.password_changed !== undefined ? profile.password_changed : true,
           })
           
           // 初回ログイン時チェック
@@ -81,12 +87,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session)
         
         if (session?.user) {
-          // プロフィール情報を取得
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
+          // プロフィール情報を取得（エラーハンドリング）
+          let profile = null
+          try {
+            const { data } = await supabase
+              .from('profiles')
+              .select('username, full_name, avatar_url, user_id, role, is_admin, is_employee, is_active, password_changed')
+              .eq('id', session.user.id)
+              .single()
+            profile = data
+          } catch (err) {
+            console.log('Profile fetch error, using defaults:', err)
+          }
           
           setUser({
             id: session.user.id,
@@ -98,8 +110,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             role: (profile?.role as any) || 'viewer',
             is_admin: profile?.is_admin || false,
             is_employee: profile?.is_employee || false,
-            is_active: profile?.is_active ?? true,
-            password_changed: profile?.password_changed ?? true,
+            is_active: profile?.is_active !== undefined ? profile.is_active : true,
+            password_changed: profile?.password_changed !== undefined ? profile.password_changed : true,
           })
           
           // 初回ログイン時チェック
@@ -131,11 +143,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // ログイン成功後、プロフィールチェック
     const { data: { session } } = await supabase.auth.getSession()
     if (session?.user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('is_employee, is_admin, is_active, password_changed')
-        .eq('id', session.user.id)
-        .single()
+      let profile = null
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('is_employee, is_admin, is_active, password_changed')
+          .eq('id', session.user.id)
+          .single()
+        profile = data
+      } catch (err) {
+        console.log('Profile check error:', err)
+      }
 
       // アクティブでない場合
       if (profile && !profile.is_active) {
