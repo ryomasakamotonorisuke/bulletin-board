@@ -59,3 +59,4 @@ CREATE TRIGGER on_auth_user_created
 -- VALUES ('USER_ID_FROM_AUTH', 'admin', '管理者', true);
 
 
+

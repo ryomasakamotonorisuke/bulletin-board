@@ -12,3 +12,4 @@ WHERE table_name = 'posts'
 ORDER BY ordinal_position;
 
 
+

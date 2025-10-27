@@ -33,3 +33,4 @@ Deployments → 最新のデプロイ → Functions タブ
 2. 再度追加（Productionにチェック）
 3. 手動で再デプロイ
 
+

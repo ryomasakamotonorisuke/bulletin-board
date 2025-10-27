@@ -20,3 +20,4 @@ SELECT post_type, COUNT(*) FROM posts GROUP BY post_type;
 SELECT role, COUNT(*) FROM profiles GROUP BY role;
 
 
+

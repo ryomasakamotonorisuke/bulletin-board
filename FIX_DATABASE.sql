@@ -15,3 +15,4 @@ CREATE INDEX IF NOT EXISTS posts_image_urls_idx ON posts USING GIN(image_urls);
 SELECT id, title, image_url, image_urls FROM posts LIMIT 3;
 
 
+
