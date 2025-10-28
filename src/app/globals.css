@@ -39,6 +39,10 @@ body {
   font-family: var(--font-sans);
   position: relative;
   overflow-x: hidden;
+  /* モバイルでのテキスト選択を改善 */
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* 背景にアニメーション効果 */
@@ -204,4 +208,68 @@ body::before {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* モバイル対応 - タッチデバイス向けの最適化 */
+@media (hover: none) and (pointer: coarse) {
+  /* タッチデバイスでのホバー効果を無効化 */
+  .hover\:scale-105:hover {
+    transform: scale(1);
+  }
+  
+  .hover\:shadow-xl:hover {
+    box-shadow: inherit;
+  }
+  
+  .group-hover\:opacity-100:hover {
+    opacity: 0;
+  }
+}
+
+/* モバイル向けの調整 */
+@media (max-width: 640px) {
+  /* モバイルでのフォントサイズ調整 */
+  body {
+    font-size: 14px;
+  }
+  
+  /* モバイルでのパディング調整 */
+  .glass-card {
+    padding: 1rem !important;
+  }
+  
+  /* モバイルでのボタンサイズ */
+  button {
+    min-height: 40px;
+  }
+  
+  /* モバイルでのタッチターゲットサイズ */
+  a, button, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* モバイル向けスクロールバー非表示 */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 199, 0, 0.3);
+    border-radius: 2px;
+  }
+}
+
+/* タブレット向けの調整 */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .glass-card {
+    padding: 1.25rem;
+  }
 }

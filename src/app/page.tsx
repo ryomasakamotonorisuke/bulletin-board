@@ -112,7 +112,7 @@ export default function Home() {
         onRefresh={fetchPostsSimple}
       />
       
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-3 sm:px-4 md:px-6 lg:px-8">
         {showPostForm && (
           <div className="mb-6">
             <PostForm
@@ -128,9 +128,9 @@ export default function Home() {
           </div>
         )}
 
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gray-900 japanese">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 japanese">
               {activeView === 'all' && '投稿一覧'}
               {activeView === 'user' && 'ユーザー投稿'}
               {activeView === 'store' && '店舗投稿'}
@@ -138,7 +138,7 @@ export default function Home() {
             </h2>
             
             {(activeView === 'all' || activeView === 'user' || activeView === 'store') && (
-              <span className="text-sm text-gray-500 japanese">
+              <span className="text-xs sm:text-sm text-gray-500 japanese">
                 {filteredPosts.length}件の投稿
                 {userRole && ` (${getRoleDisplayName(userRole)})`}
               </span>
@@ -186,7 +186,7 @@ export default function Home() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 auto-rows-fr">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8 auto-rows-fr">
                 {filteredPosts.map((post, idx) => (
                   <div 
                     key={post.id} 

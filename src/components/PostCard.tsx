@@ -109,38 +109,38 @@ export default function PostCard({ post }: PostCardProps) {
     <>
     <div 
       ref={setCardRef}
-      className="glass-card p-6 border-2 hover:glow-effect cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:border-primary-yellow"
+      className="glass-card p-4 sm:p-5 md:p-6 border-2 hover:glow-effect cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:border-primary-yellow"
       style={{ 
         background: 'linear-gradient(135deg, rgba(250, 253, 255, 0.95) 0%, rgba(250, 253, 255, 0.9) 100%)',
         borderColor: '#FFC700',
-        borderRadius: '32px',
+        borderRadius: '20px sm:24px md:32px',
         boxShadow: '0 12px 40px rgba(1, 22, 35, 0.12), 0 0 0 1px rgba(255, 199, 0, 0.1)',
         backdropFilter: 'blur(20px)'
       }}
       onClick={handleCardClick}
     >
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex items-center space-x-3">
+      <div className="flex justify-between items-start mb-3 sm:mb-4">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           <div 
-            className="w-12 h-12 rounded-full flex items-center justify-center border-2"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-2"
             style={{ backgroundColor: '#FFC700' }}
           >
             {post.profiles?.avatar_url ? (
               <img
                 src={post.profiles.avatar_url}
                 alt={post.profiles.full_name || post.profiles.username || ''}
-                className="w-12 h-12 rounded-full object-cover"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
               />
             ) : (
-              <User className="w-6 h-6" style={{ color: '#011623' }} />
+              <User className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: '#011623' }} />
             )}
           </div>
           <div>
-            <h3 className="font-medium japanese" style={{ color: '#011623' }}>
+            <h3 className="font-medium text-sm sm:text-base japanese" style={{ color: '#011623' }}>
               {post.profiles?.full_name || post.profiles?.username || '不明なユーザー'}
             </h3>
-            <div className="flex items-center text-sm japanese" style={{ color: '#F69111' }}>
-              <Calendar className="w-4 h-4 mr-1" />
+            <div className="flex items-center text-xs sm:text-sm japanese" style={{ color: '#F69111' }}>
+              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
               {formatDate(post.created_at)}
             </div>
           </div>
@@ -148,40 +148,40 @@ export default function PostCard({ post }: PostCardProps) {
 
         {(isOwner || isAdmin) && (
           <div 
-            className="flex space-x-2"
+            className="flex space-x-1 sm:space-x-2"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setIsEditing(true)}
-              className="p-2 text-gray-400 hover:text-indigo-600 transition-colors"
+              className="p-1.5 sm:p-2 text-gray-400 hover:text-indigo-600 transition-colors"
               title={isAdmin && !isOwner ? "管理者権限で編集" : "編集"}
             >
-              <Edit className="w-4 h-4" />
+              <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
             </button>
             <button
               onClick={handleDelete}
               disabled={isDeleting}
-              className="p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50"
+              className="p-1.5 sm:p-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50"
               title={isAdmin && !isOwner ? "管理者権限で削除" : "削除"}
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
             </button>
           </div>
         )}
       </div>
 
-      <h2 className="text-xl font-semibold mb-3 japanese" style={{ color: '#011623' }}>
+      <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 japanese" style={{ color: '#011623' }}>
         {post.title}
         {images.length > 1 && (
-          <span className="ml-2 inline-flex items-center text-sm" style={{ color: '#F69111' }}>
-            <Images className="w-4 h-4 mr-1" />
+          <span className="ml-2 inline-flex items-center text-xs sm:text-sm" style={{ color: '#F69111' }}>
+            <Images className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
             {images.length}枚
           </span>
         )}
       </h2>
 
       {post.content && (
-        <div className="mb-4 whitespace-pre-wrap japanese" style={{ color: '#011623' }}>
+        <div className="mb-3 sm:mb-4 whitespace-pre-wrap text-sm sm:text-base japanese" style={{ color: '#011623' }}>
           {post.content}
         </div>
       )}
@@ -255,16 +255,16 @@ export default function PostCard({ post }: PostCardProps) {
             } else {
               // 単一画像の場合
               return (
-                <div className="overflow-hidden rounded-3xl group cursor-pointer scale-in"
+                <div className="overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl group cursor-pointer scale-in"
                   onClick={(e) => {
                     e.stopPropagation()
                     setShowImageModal(true)
                   }}>
                   <div 
-                    className="relative rounded-3xl overflow-hidden"
+                    className="relative rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden"
                     style={{
                       background: 'linear-gradient(135deg, rgba(255, 199, 0, 0.15) 0%, rgba(246, 145, 17, 0.15) 100%)',
-                      minHeight: '320px',
+                      minHeight: '200px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -274,7 +274,7 @@ export default function PostCard({ post }: PostCardProps) {
                     <img
                       src={images[0]}
                       alt={post.title}
-                      className="w-full h-auto max-h-[500px] object-contain"
+                      className="w-full h-auto max-h-[300px] sm:max-h-[400px] md:max-h-[500px] object-contain"
                       onLoad={() => console.log('画像読み込み成功')}
                       onError={(e) => {
                         console.error('画像読み込み失敗')
@@ -282,10 +282,10 @@ export default function PostCard({ post }: PostCardProps) {
                         target.style.display = 'none'
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6">
-                      <div className="flex items-center gap-3 text-white mb-4">
-                        <ZoomIn className="w-10 h-10" />
-                        <span className="text-xl font-bold japanese">拡大表示</span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-3 sm:pb-4 md:pb-6">
+                      <div className="flex items-center gap-2 sm:gap-3 text-white mb-2 sm:mb-3 md:mb-4">
+                        <ZoomIn className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
+                        <span className="text-sm sm:text-base md:text-xl font-bold japanese">拡大表示</span>
                       </div>
                     </div>
                   </div>
@@ -326,10 +326,10 @@ export default function PostCard({ post }: PostCardProps) {
         </div>
       )}
 
-      {/* 詳細モーダル - 全画面横長 */}
+      {/* 詳細モーダル - レスポンシブ対応 */}
       {showFullModal && (
         <div 
-          className="fixed inset-0 z-50"
+          className="fixed inset-0 z-50 overflow-hidden"
           style={{ 
             backgroundColor: '#011623',
             backdropFilter: 'blur(20px)'
@@ -337,15 +337,13 @@ export default function PostCard({ post }: PostCardProps) {
           onClick={() => setShowFullModal(false)}
         >
           <div 
-            className={`w-screen h-screen flex items-center justify-center p-6 ${isAnimating ? 'hero-expand' : ''}`}
+            className={`w-screen h-screen flex items-center justify-center p-3 sm:p-4 md:p-6 ${isAnimating ? 'hero-expand' : ''}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div 
-              className="h-[90vh] flex flex-row overflow-hidden"
+              className="h-[95vh] sm:h-[90vh] flex flex-col md:flex-row overflow-hidden w-full max-w-[95vw] md:max-w-[95vw] lg:max-w-6xl xl:max-w-7xl"
               style={{
-                width: '95vw',
-                maxWidth: '1600px',
-                borderRadius: '40px',
+                borderRadius: '20px sm:24px md:32px lg:40px',
                 background: 'linear-gradient(135deg, rgba(250, 253, 255, 0.98) 0%, rgba(250, 253, 255, 0.95) 100%)',
                 boxShadow: '0 30px 80px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 199, 0, 0.2)',
                 backdropFilter: 'blur(40px)',
@@ -355,31 +353,31 @@ export default function PostCard({ post }: PostCardProps) {
               {/* 閉じるボタン */}
               <button
                 onClick={() => setShowFullModal(false)}
-                className="absolute top-8 right-8 z-20 p-3 rounded-full transition-all hover:scale-125"
+                className="absolute top-2 sm:top-4 md:top-8 right-2 sm:right-4 md:right-8 z-20 p-2 sm:p-2.5 md:p-3 rounded-full transition-all hover:scale-125"
                 style={{ 
                   backgroundColor: 'rgba(1, 22, 35, 0.1)',
                   backdropFilter: 'blur(10px)'
                 }}
               >
-                <X className="w-6 h-6" style={{ color: '#011623' }} />
+                <X className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" style={{ color: '#011623' }} />
               </button>
 
-              {/* 左側: 画像 - 50% */}
-              <div className="w-1/2 overflow-y-auto p-8" style={{ backgroundColor: '#FAFDFF' }}>
+              {/* 画像エリア - モバイルで上部、PCで左側 */}
+              <div className="w-full md:w-1/2 overflow-y-auto p-3 sm:p-4 md:p-6 lg:p-8" style={{ backgroundColor: '#FAFDFF' }}>
               {images.length === 1 ? (
-                <div className="h-full flex items-center justify-center scale-in">
+                <div className="h-full min-h-[200px] sm:min-h-[300px] flex items-center justify-center scale-in">
                   <img
                     src={images[0]}
                     alt={post.title}
-                    className="max-w-full max-h-full object-contain rounded-2xl"
+                    className="max-w-full max-h-[60vh] sm:max-h-[70vh] md:max-h-full object-contain rounded-xl sm:rounded-2xl"
                   />
                 </div>
               ) : (
-                <div className="grid gap-4">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                   {images.slice(0, 4).map((url: string, idx: number) => (
                     <div 
                       key={idx} 
-                      className="relative cursor-pointer transition-all hover:scale-105 rounded-2xl overflow-hidden scale-in"
+                      className="relative cursor-pointer transition-all hover:scale-105 rounded-xl sm:rounded-2xl overflow-hidden scale-in"
                       style={{ 
                         aspectRatio: '1',
                         animationDelay: `${idx * 0.1}s`
@@ -397,8 +395,8 @@ export default function PostCard({ post }: PostCardProps) {
                       {idx === 3 && images.length > 4 && (
                         <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
                           <div className="text-center text-white">
-                            <Images className="w-10 h-10 mx-auto mb-2" />
-                            <span className="text-2xl font-bold japanese block">+{images.length - 4}</span>
+                            <Images className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-1 sm:mb-2" />
+                            <span className="text-xl sm:text-2xl font-bold japanese block">{images.length - 4}</span>
                           </div>
                         </div>
                       )}
@@ -408,44 +406,44 @@ export default function PostCard({ post }: PostCardProps) {
               )}
               </div>
             
-              {/* 右側: コンテンツ - 50% */}
-              <div className="w-1/2 overflow-y-auto p-10" style={{ backgroundColor: 'rgba(250, 253, 255, 0.98)' }}>
+              {/* コンテンツエリア - モバイルで下部、PCで右側 */}
+              <div className="w-full md:w-1/2 overflow-y-auto p-4 sm:p-6 md:p-8 lg:p-10" style={{ backgroundColor: 'rgba(250, 253, 255, 0.98)' }}>
                 {/* 投稿ヘッダー */}
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-14 h-14 rounded-full flex items-center justify-center border-2" style={{ backgroundColor: '#FFC700' }}>
+              <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center border-2" style={{ backgroundColor: '#FFC700' }}>
                   {post.profiles?.avatar_url ? (
-                    <img src={post.profiles.avatar_url} className="w-14 h-14 rounded-full object-cover" />
+                    <img src={post.profiles.avatar_url} className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full object-cover" />
                   ) : (
-                    <User className="w-7 h-7" style={{ color: '#011623' }} />
+                    <User className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" style={{ color: '#011623' }} />
                   )}
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg japanese" style={{ color: '#011623' }}>
+                  <h3 className="font-bold text-sm sm:text-base md:text-lg japanese" style={{ color: '#011623' }}>
                     {post.profiles?.full_name || post.profiles?.username || '不明なユーザー'}
                   </h3>
-                  <div className="flex items-center text-sm japanese" style={{ color: '#F69111' }}>
-                    <Calendar className="w-4 h-4 mr-1" />
+                  <div className="flex items-center text-xs sm:text-sm japanese" style={{ color: '#F69111' }}>
+                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                     {formatDate(post.created_at)}
                   </div>
                 </div>
               </div>
               
-                <h1 className="text-5xl font-bold mb-8 japanese leading-tight" style={{ color: '#011623' }}>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 md:mb-8 japanese leading-tight" style={{ color: '#011623' }}>
                   {post.title}
                 </h1>
               
                 {post.content && (
-                  <div className="mb-10 whitespace-pre-wrap japanese text-2xl leading-relaxed" style={{ color: '#011623' }}>
+                  <div className="mb-6 sm:mb-8 md:mb-10 whitespace-pre-wrap japanese text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed" style={{ color: '#011623' }}>
                     {post.content}
                   </div>
                 )}
               
                 {/* いいねとコメント */}
-                <div className="flex items-center gap-6 pt-8 border-t-2" style={{ borderColor: '#FFC700' }}>
+                <div className="flex items-center gap-3 sm:gap-4 md:gap-6 pt-4 sm:pt-6 md:pt-8 border-t-2" style={{ borderColor: '#FFC700' }}>
                 <LikeButton postId={post.id} />
                 <button
                   onClick={() => setShowComments(!showComments)}
-                  className="flex items-center gap-2 px-6 py-3 rounded-xl transition-colors font-bold"
+                  className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 md:px-6 md:py-3 rounded-lg sm:rounded-xl transition-colors font-bold text-sm sm:text-base"
                   style={{ 
                     backgroundColor: '#F5F5F5',
                     color: '#011623'
@@ -453,7 +451,7 @@ export default function PostCard({ post }: PostCardProps) {
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#E0E0E0'}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F5F5F5'}
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                   <span className="font-bold japanese">コメント</span>
@@ -461,7 +459,7 @@ export default function PostCard({ post }: PostCardProps) {
               </div>
               
                 {showComments && (
-                  <div className="mt-8">
+                  <div className="mt-4 sm:mt-6 md:mt-8">
                     <CommentSection postId={post.id} />
                   </div>
                 )}

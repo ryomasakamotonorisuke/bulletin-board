@@ -96,9 +96,9 @@ export default function ModernLoginForm({ onForgotPassword, onSignUp }: ModernLo
       </div>
 
       {/* 右側: フォーム */}
-      <div className="flex-1 flex items-center justify-center p-8 relative">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8 relative">
         <div 
-          className="w-full max-w-md p-8 rounded-3xl"
+          className="w-full max-w-md p-6 sm:p-7 md:p-8 rounded-2xl sm:rounded-3xl"
           style={{
             background: 'linear-gradient(135deg, rgba(250, 253, 255, 0.95) 0%, rgba(250, 253, 255, 0.9) 100%)',
             backdropFilter: 'blur(40px)',
@@ -106,26 +106,26 @@ export default function ModernLoginForm({ onForgotPassword, onSignUp }: ModernLo
             border: '2px solid rgba(255, 199, 0, 0.3)'
           }}
         >
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4"
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl mb-3 sm:mb-4"
               style={{ backgroundColor: '#FFC700' }}>
-              <Mail className="w-10 h-10" style={{ color: '#011623' }} />
+              <Mail className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: '#011623' }} />
             </div>
-            <h2 className="text-3xl font-bold mb-2 japanese" style={{ color: '#011623' }}>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-2 japanese" style={{ color: '#011623' }}>
               ログイン
             </h2>
-            <p className="text-gray-600 japanese">
+            <p className="text-sm sm:text-base text-gray-600 japanese">
               アカウントにアクセスして開始
             </p>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 rounded-2xl" style={{ backgroundColor: 'rgba(229, 54, 71, 0.1)' }}>
-              <p className="text-sm text-red-600 japanese">{error}</p>
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl" style={{ backgroundColor: 'rgba(229, 54, 71, 0.1)' }}>
+              <p className="text-xs sm:text-sm text-red-600 japanese">{error}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* メールアドレス */}
             <div>
               <label className="block text-sm font-bold mb-2 japanese" style={{ color: '#011623' }}>
@@ -213,8 +213,8 @@ export default function ModernLoginForm({ onForgotPassword, onSignUp }: ModernLo
           </form>
 
           {/* 管理者連絡 */}
-          <div className="mt-8 text-center">
-            <p className="text-gray-600 text-sm japanese">
+          <div className="mt-6 sm:mt-8 text-center">
+            <p className="text-gray-600 text-xs sm:text-sm japanese">
               アカウントが必要な場合は管理者にお問い合わせください
             </p>
           </div>

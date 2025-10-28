@@ -137,8 +137,8 @@ export default function PostForm({ onSuccess, onCancel, initialData, isEditing =
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold mb-4 japanese">
+    <div className="bg-white rounded-lg sm:rounded-xl shadow-md p-4 sm:p-5 md:p-6">
+      <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 japanese">
         {isEditing 
           ? '投稿を編集' 
           : postType === 'store' 
@@ -146,9 +146,9 @@ export default function PostForm({ onSuccess, onCancel, initialData, isEditing =
             : '新しい投稿'}
       </h2>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="title" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
             タイトル *
           </label>
           <input
@@ -156,14 +156,14 @@ export default function PostForm({ onSuccess, onCancel, initialData, isEditing =
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             placeholder="投稿のタイトルを入力してください"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="content" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
             内容
           </label>
           <textarea
@@ -171,21 +171,21 @@ export default function PostForm({ onSuccess, onCancel, initialData, isEditing =
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             placeholder="投稿の内容を入力してください（任意）"
           />
         </div>
 
         <div>
-          <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="image" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
             画像
           </label>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <label
               htmlFor="image"
-              className="flex items-center px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50"
+              className="flex items-center px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg sm:rounded-md cursor-pointer hover:bg-gray-50"
             >
-              <ImageIcon className="w-4 h-4 mr-2" />
+              <ImageIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               画像を選択
             </label>
             <input
@@ -202,7 +202,7 @@ export default function PostForm({ onSuccess, onCancel, initialData, isEditing =
           </div>
           
           {imagePreviews.length > 0 && (
-            <div className="mt-3 grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="mt-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
               {imagePreviews.map((preview, index) => (
                 <div 
                   key={index}
@@ -232,15 +232,15 @@ export default function PostForm({ onSuccess, onCancel, initialData, isEditing =
         </div>
 
         {error && (
-          <div className="text-red-600 text-sm">{error}</div>
+          <div className="text-red-600 text-xs sm:text-sm">{error}</div>
         )}
 
-        <div className="flex justify-end space-x-3">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
           {onCancel && (
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base text-gray-700 bg-gray-200 rounded-lg sm:rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
               キャンセル
             </button>
@@ -248,7 +248,7 @@ export default function PostForm({ onSuccess, onCancel, initialData, isEditing =
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base bg-indigo-600 text-white rounded-lg sm:rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
           >
             {loading ? '保存中...' : isEditing ? '更新' : '投稿'}
           </button>
