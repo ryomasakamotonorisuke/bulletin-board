@@ -10,7 +10,7 @@ interface AuthContextType {
   session: Session | null
   loading: boolean
   requiresPasswordChange: boolean
-  signIn: (user_id: string, password: string) => Promise<{ error: any }>
+  signIn: (email: string, password: string) => Promise<{ error: any }>
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<{ error: any }>
@@ -129,10 +129,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  const signIn = async (user_id: string, password: string) => {
-    // user_idをメールアドレスとして扱う（Supabase Auth互換）
+  const signIn = async (email: string, password: string) => {
     const { error: authError } = await supabase.auth.signInWithPassword({
-      email: user_id,
+      email,
       password,
     })
     

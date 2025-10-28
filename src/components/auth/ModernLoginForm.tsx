@@ -10,7 +10,7 @@ interface ModernLoginFormProps {
 }
 
 export default function ModernLoginForm({ onForgotPassword, onSignUp }: ModernLoginFormProps) {
-  const [user_id, setUser_id] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -22,7 +22,7 @@ export default function ModernLoginForm({ onForgotPassword, onSignUp }: ModernLo
     setLoading(true)
     setError('')
 
-    const { error: signInError } = await signIn(user_id, password)
+    const { error: signInError } = await signIn(email, password)
     
     if (signInError) {
       setError(signInError.message)
@@ -126,25 +126,25 @@ export default function ModernLoginForm({ onForgotPassword, onSignUp }: ModernLo
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* ユーザーID */}
+            {/* メールアドレス */}
             <div>
               <label className="block text-sm font-bold mb-2 japanese" style={{ color: '#011623' }}>
-                ユーザーID
+                メールアドレス
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5" style={{ color: '#F69111' }} />
                 </div>
                 <input
-                  type="text"
-                  value={user_id}
-                  onChange={(e) => setUser_id(e.target.value)}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 focus:outline-none focus:ring-2 focus:ring-primary-yellow transition-all"
                   style={{
                     borderColor: '#FFC700',
                     backgroundColor: 'rgba(250, 253, 255, 0.8)'
                   }}
-                  placeholder="ユーザーIDを入力"
+                  placeholder="your@email.com"
                   required
                 />
               </div>
