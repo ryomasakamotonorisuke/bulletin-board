@@ -121,14 +121,12 @@ export default function PostForm({ onSuccess, onCancel, initialData, isEditing =
         setImageFiles([])
         setImagePreviews([])
         
+        console.log('✅ 投稿が正常に作成されました')
+        
         // 成功メッセージを表示
         alert('投稿が正常に作成されました！')
         
-        // ページをリロードして投稿を取得
-        setTimeout(() => {
-          window.location.reload()
-        }, 500)
-        
+        // onSuccess を呼び出してフォームを閉じる
         onSuccess?.()
       }
     } catch (err) {

@@ -116,7 +116,12 @@ export default function Home() {
         {showPostForm && (
           <div className="mb-6">
             <PostForm
-              onSuccess={() => setShowPostForm(false)}
+              onSuccess={async () => {
+                setShowPostForm(false)
+                // 投稿後に投稿リストを更新
+                console.log('投稿フォーム閉じ、投稿リストを更新')
+                await fetchPostsSimple()
+              }}
               onCancel={() => setShowPostForm(false)}
               postType={activeView === 'store' ? 'store' : 'user'}
             />

@@ -24,32 +24,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // 1秒で強制的にローディング終了（軽量化）
-    const timeoutId = setTimeout(() => {
-      setLoading(false)
-    }, 1000)
+    console.log('🔐 AuthProvider: Initializing...')
     
-    // 認証状態を簡易確認
+    // 認証状態を確認
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        console.log('🔍 Checking auth state...')
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('❌ Auth check error:', error)
+          setUser(null)
+          setSession(null)
+          setLoading(false)
+          return
+        }
         
         if (session?.user) {
           setSession(session)
-          console.log('Session found:', session.user.id)
+          console.log('✅ Session found:', session.user.id)
           
-          // プロフィール情報を取得（エラーハンドリング）
+          // プロフィール情報を取得
           let profile = null
           try {
-            const { data, error } = await supabase
+            const { data, error: profileError } = await supabase
               .from('profiles')
               .select('username, full_name, avatar_url, user_id, role, is_admin, is_employee, is_active, password_changed')
               .eq('id', session.user.id)
               .single()
-            profile = data
-            console.log('Profile fetched:', profile)
+            
+            if (profileError) {
+              console.log('⚠️ Profile fetch error:', profileError)
+            } else {
+              profile = data
+              console.log('✅ Profile fetched:', profile)
+            }
           } catch (err) {
-            console.log('Profile fetch error, using defaults:', err)
+            console.log('⚠️ Profile fetch exception:', err)
           }
           
           setUser({
@@ -66,28 +77,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             password_changed: profile?.password_changed !== undefined ? profile.password_changed : true,
           })
           
-          console.log('User set successfully')
+          console.log('✅ User set successfully')
         } else {
+          console.log('ℹ️ No session found')
           setUser(null)
         }
       } catch (error) {
-        console.error('Auth check error:', error)
+        console.error('❌ Auth check exception:', error)
         setUser(null)
       } finally {
-        clearTimeout(timeoutId)
+        console.log('🏁 Auth check complete')
         setLoading(false)
       }
     }
 
+    // 初回認証チェック
     checkAuth()
 
-    // 認証状態の変更を監視（軽量化）
+    // 認証状態の変更を監視
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('🔔 Auth state changed:', event, session?.user?.id)
         setSession(session)
         
         if (session?.user) {
-          // プロフィール情報を取得（エラーハンドリング）
           let profile = null
           try {
             const { data } = await supabase
@@ -97,7 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .single()
             profile = data
           } catch (err) {
-            console.log('Profile fetch error, using defaults:', err)
+            console.log('⚠️ Profile fetch error on change:', err)
           }
           
           setUser({
@@ -113,7 +126,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             is_active: profile?.is_active !== undefined ? profile.is_active : true,
             password_changed: profile?.password_changed !== undefined ? profile.password_changed : true,
           })
-          
         } else {
           setUser(null)
         }
@@ -122,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     )
 
     return () => {
-      clearTimeout(timeoutId)
+      console.log('🧹 Cleaning up auth listener')
       subscription.unsubscribe()
     }
   }, [])
