@@ -241,25 +241,42 @@ export function usePosts() {
 
   // 簡易的な投稿取得（RLSポリシーを回避）
   const fetchPostsSimple = async () => {
+    console.log('🔄 更新ボタンが押されました')
+    setLoading(true)
+    setError(null)
+    
     try {
       console.log('簡易投稿取得開始')
       
       const { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select(`
+          *,
+          profiles (
+            username,
+            full_name,
+            avatar_url
+          )
+        `)
         .order('created_at', { ascending: false })
         .limit(20)
 
       if (error) {
         console.error('簡易投稿取得エラー:', error)
+        setError('投稿の取得に失敗しました')
+        setLoading(false)
         return
       }
       
       console.log('簡易投稿取得成功:', data?.length || 0, '件')
       console.log('簡易投稿データ:', data)
       setPosts(data || [])
+      setError(null)
     } catch (err) {
       console.error('簡易投稿取得エラー:', err)
+      setError('投稿の取得に失敗しました')
+    } finally {
+      setLoading(false)
     }
   }
 

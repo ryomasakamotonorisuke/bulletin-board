@@ -98,13 +98,21 @@ export default function PostForm({ onSuccess, onCancel, initialData, isEditing =
       }
 
       if (result.error) {
-        // エラーメッセージを簡潔に
-        let errorMsg = result.error
-        if (errorMsg.includes('image_urls')) {
+        // エラーメッセージを詳細に
+        console.error('投稿作成エラー:', result.error)
+        let errorMsg = typeof result.error === 'string' ? result.error : String(result.error)
+        
+        // エラーメッセージをわかりやすく変換
+        if (errorMsg.includes('Row Level Security')) {
+          errorMsg = '権限がありません。管理者にお問い合わせください。'
+        } else if (errorMsg.includes('image_urls')) {
           errorMsg = 'データベースにimage_urlsカラムを追加するか、単一画像アップロードをご利用ください'
         } else if (errorMsg.includes('column') && errorMsg.includes('post_type')) {
           errorMsg = 'データベースのpost_typeカラムが追加されていません'
+        } else if (errorMsg.includes('permission denied') || errorMsg.includes('403')) {
+          errorMsg = '投稿する権限がありません。管理者にお問い合わせください。'
         }
+        
         setError(errorMsg)
       } else {
         // フォームをリセット
@@ -113,7 +121,10 @@ export default function PostForm({ onSuccess, onCancel, initialData, isEditing =
         setImageFiles([])
         setImagePreviews([])
         
-        // リロードして新しい投稿を取得
+        // 成功メッセージを表示
+        alert('投稿が正常に作成されました！')
+        
+        // ページをリロードして投稿を取得
         setTimeout(() => {
           window.location.reload()
         }, 500)
