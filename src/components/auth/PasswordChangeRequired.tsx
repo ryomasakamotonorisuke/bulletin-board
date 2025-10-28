@@ -5,7 +5,6 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Lock, AlertCircle } from 'lucide-react'
 
 export default function PasswordChangeRequired() {
-  const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)

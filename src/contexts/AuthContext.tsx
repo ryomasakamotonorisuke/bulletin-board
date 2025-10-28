@@ -203,14 +203,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
     
     if (!error && user) {
-      // パスワード変更フラグを更新
-      await supabase
-        .from('profiles')
-        .update({ password_changed: true })
-        .eq('id', user.id)
-      
-      setRequiresPasswordChange(false)
-      setUser({ ...user, password_changed: true })
+      // パスワード変更フラグを更新（エラーハンドリング）
+      try {
+        await supabase
+          .from('profiles')
+          .update({ password_changed: true })
+          .eq('id', user.id)
+        setRequiresPasswordChange(false)
+        if (user) {
+          setUser({ ...user, password_changed: true })
+        }
+      } catch (err) {
+        console.log('Profile update error:', err)
+        // エラーでもパスワード変更は成功
+        setRequiresPasswordChange(false)
+        if (user) {
+          setUser({ ...user, password_changed: true })
+        }
+      }
     }
     
     return { error }
@@ -218,13 +228,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const markPasswordChanged = async () => {
     if (user) {
-      await supabase
-        .from('profiles')
-        .update({ password_changed: true })
-        .eq('id', user.id)
+      try {
+        await supabase
+          .from('profiles')
+          .update({ password_changed: true })
+          .eq('id', user.id)
+      } catch (err) {
+        console.log('Profile update error:', err)
+      }
       
       setRequiresPasswordChange(false)
-      setUser({ ...user, password_changed: true })
+      if (user) {
+        setUser({ ...user, password_changed: true })
+      }
     }
   }
 
