@@ -36,15 +36,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (session?.user) {
           setSession(session)
+          console.log('Session found:', session.user.id)
+          
           // プロフィール情報を取得（エラーハンドリング）
           let profile = null
           try {
-            const { data } = await supabase
+            const { data, error } = await supabase
               .from('profiles')
               .select('username, full_name, avatar_url, user_id, role, is_admin, is_employee, is_active, password_changed')
               .eq('id', session.user.id)
               .single()
             profile = data
+            console.log('Profile fetched:', profile)
           } catch (err) {
             console.log('Profile fetch error, using defaults:', err)
           }
@@ -63,10 +66,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             password_changed: profile?.password_changed !== undefined ? profile.password_changed : true,
           })
           
+          console.log('User set successfully')
         } else {
           setUser(null)
         }
       } catch (error) {
+        console.error('Auth check error:', error)
         setUser(null)
       } finally {
         clearTimeout(timeoutId)
