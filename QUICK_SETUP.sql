@@ -18,19 +18,21 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS password_changed BOOLEAN DEFAULT F
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS employee_id TEXT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS department TEXT;
 
--- ステップ3: 既存ユーザーをアクティブにして管理者にする（必要に応じて）
--- ⚠️ 以下を実行して、管理者ユーザーを作成してください
--- 例: 最初のユーザーを管理者にする場合
+-- ステップ3: 管理者ユーザーを設定
+-- 既存のユーザーを管理者にする場合（最初のユーザー）
 UPDATE profiles 
 SET 
   is_admin = TRUE,
   is_active = TRUE,
-  is_employee = TRUE
+  is_employee = TRUE,
+  user_id = (
+    SELECT email FROM auth.users WHERE auth.users.id = profiles.id
+  )
 WHERE id IN (
   SELECT id FROM auth.users ORDER BY created_at LIMIT 1
 );
 
--- ステップ4: user_idを設定
+-- ステップ4: user_idを設定（全てのユーザー）
 UPDATE profiles p
 SET user_id = u.email
 FROM auth.users u
