@@ -150,19 +150,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       const result = await Promise.race([loginPromise, timeoutPromise]) as any
       
-      console.log('Result received')
-      console.log('Error:', result.error?.message)
-      console.log('User ID:', result.data?.user?.id)
+      console.log('✅ Result received')
+      console.log('Result object:', result)
+      console.log('Has error:', !!result.error)
+      console.log('Has data:', !!result.data)
       
       const { data, error } = result
       
       if (error) {
-        console.error('Login error:', error.message)
+        console.error('❌ Login error:', error.message)
         return { error }
       }
 
-      console.log('Login successful!')
-      console.log('User:', data?.user?.id)
+      console.log('✅ Login successful!')
+      console.log('User ID:', data?.user?.id)
+      console.log('Session exists:', !!data?.session)
       
       return { error: null }
     } catch (err) {
