@@ -176,7 +176,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    console.log('🔒 Signing out...')
+    try {
+      // セッションをクリア
+      await supabase.auth.signOut()
+      
+      // ローカル状態をリセット
+      setUser(null)
+      setSession(null)
+      
+      console.log('✅ Signed out successfully')
+    } catch (err) {
+      console.error('❌ Sign out error:', err)
+    }
   }
 
   const resetPassword = async (email: string) => {
