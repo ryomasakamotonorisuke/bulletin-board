@@ -131,26 +131,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('=== Login Start ===')
     console.log('Email:', email)
     
+    // 環境変数の確認
+    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+    console.log('Anon Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '設定済み' : '未設定')
+    
     try {
       console.log('Calling signInWithPassword...')
-      const result = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
       
-      console.log('Result received:', result)
+      console.log('Result received, error:', error?.message)
+      console.log('Data:', data?.user?.id)
       
-      if (result.error) {
-        console.error('Login error:', result.error.message)
-        return { error: result.error }
+      if (error) {
+        console.error('Login error:', error.message)
+        return { error }
       }
 
       console.log('Login successful!')
-      console.log('User:', result.data.user?.id)
-      
-      // セッションを確認
-      const { data: sessionData } = await supabase.auth.getSession()
-      console.log('Session:', sessionData.session?.user?.id)
+      console.log('User:', data?.user?.id)
       
       return { error: null }
     } catch (err) {
