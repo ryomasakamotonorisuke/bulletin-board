@@ -63,8 +63,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             password_changed: profile?.password_changed !== undefined ? profile.password_changed : true,
           })
           
-          // 初回ログイン時チェック
-          setRequiresPasswordChange(profile?.password_changed === false)
         } else {
           setUser(null)
         }
@@ -111,8 +109,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             password_changed: profile?.password_changed !== undefined ? profile.password_changed : true,
           })
           
-          // 初回ログイン時チェック
-          setRequiresPasswordChange(profile?.password_changed === false)
         } else {
           setUser(null)
         }

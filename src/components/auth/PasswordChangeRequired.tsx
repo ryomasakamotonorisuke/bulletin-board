@@ -10,7 +10,7 @@ export default function PasswordChangeRequired() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
-  const { updatePassword, markPasswordChanged } = useAuth()
+  const { updatePassword } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,13 +33,11 @@ export default function PasswordChangeRequired() {
 
     try {
       // パスワードを更新
-      const { error: updateError } = await updatePassword(newPassword)
+      const { error: updateError } = await updatePassword('', newPassword)
       
       if (updateError) {
         setError(updateError.message || 'パスワードの更新に失敗しました')
       } else {
-        // フラグを更新
-        await markPasswordChanged()
         setMessage('パスワードが正常に変更されました。ページを再読み込みしています...')
         
         // 少し待ってからリロード

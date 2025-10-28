@@ -52,7 +52,7 @@ export default function ResetPasswordPage() {
     setLoading(true)
     setError('')
 
-    const { error } = await updatePassword(password)
+    const { error } = await updatePassword('', password)
     
     if (error) {
       setError(error.message)
