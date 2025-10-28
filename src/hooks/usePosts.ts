@@ -106,6 +106,7 @@ export function usePosts() {
         title: postData.title,
         content: postData.content,
         image_url: imageUrls[0] || null, // 後方互換性のため
+        image_urls: imageUrls.length > 0 ? imageUrls : null, // 複数画像を保存
       }
 
       console.log('投稿データを挿入:', postDataToInsert)
