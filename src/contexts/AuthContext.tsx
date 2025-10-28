@@ -102,13 +102,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (session?.user) {
           console.log('📝 Fetching profile for user:', session.user.id)
+          
+          // プロフィール取得を試行（タイムアウト付き）
           let profile = null
           try {
-            const { data, error: profileError } = await supabase
+            console.log('🔍 Starting profile query...')
+            const profilePromise = supabase
               .from('profiles')
               .select('username, full_name, avatar_url, user_id, role, is_admin, is_employee, is_active, password_changed')
               .eq('id', session.user.id)
               .single()
+            
+            // タイムアウト設定（5秒）
+            const timeoutPromise = new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+            )
+            
+            const { data, error: profileError } = await Promise.race([
+              profilePromise,
+              timeoutPromise
+            ]) as any
             
             if (profileError) {
               console.log('⚠️ Profile fetch error on change:', profileError)
@@ -117,7 +130,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               console.log('✅ Profile fetched on change:', profile)
             }
           } catch (err) {
-            console.log('⚠️ Profile fetch exception on change:', err)
+            console.error('❌ Profile fetch exception on change:', err)
+            console.log('ℹ️ Using default values for user')
           }
           
           const userData = {
