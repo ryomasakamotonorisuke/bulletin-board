@@ -132,32 +132,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: authError }
     }
 
-    // ログイン成功後、プロフィールチェック
-    const { data: { session } } = await supabase.auth.getSession()
-    if (session?.user) {
-      let profile = null
-      try {
-        const { data } = await supabase
-          .from('profiles')
-          .select('is_employee, is_admin, is_active, password_changed')
-          .eq('id', session.user.id)
-          .single()
-        profile = data
-      } catch (err) {
-        console.log('Profile check error:', err)
-      }
-
-      // アクティブでない場合
-      if (profile && !profile.is_active) {
-        await supabase.auth.signOut()
-        return { 
-          error: { 
-            message: 'このアカウントは無効化されています。管理者にお問い合わせください。' 
-          } 
-        }
-      }
-    }
-
     return { error: null }
   }
 
