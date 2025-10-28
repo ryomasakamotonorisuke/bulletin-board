@@ -172,13 +172,23 @@ export default function PostCard({ post }: PostCardProps) {
 
       <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 japanese" style={{ color: '#011623' }}>
         {post.title}
-        {images.length > 1 && (
-          <span className="ml-2 inline-flex items-center text-xs sm:text-sm" style={{ color: '#F69111' }}>
-            <Images className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-            {images.length}枚
-          </span>
-        )}
       </h2>
+
+      {/* 画像枚数インジケーター */}
+      {images.length > 0 && (
+        <div className="mb-2 flex items-center gap-2">
+          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs sm:text-sm font-bold"
+            style={{ 
+              backgroundColor: images.length > 1 ? '#E53647' : '#FFC700',
+              color: '#FAFDFF'
+            }}>
+            <Images className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="japanese">
+              {images.length}枚の画像
+            </span>
+          </div>
+        </div>
+      )}
 
       {post.content && (
         <div className="mb-3 sm:mb-4 whitespace-pre-wrap text-sm sm:text-base japanese" style={{ color: '#011623' }}>
@@ -196,14 +206,13 @@ export default function PostCard({ post }: PostCardProps) {
               // 複数画像の場合 - グリッド表示
               return (
                 <div className="relative">
-                  {/* 複数画像バッジ */}
-                  <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 rounded-full"
-                    style={{ 
-                      backgroundColor: '#E53647',
-                      color: '#FAFDFF'
-                    }}>
-                    <Images className="w-3 h-3" />
-                    <span className="text-xs font-bold japanese">{images.length}</span>
+                  {/* 画像枚数ヘッダー */}
+                  <div className="mb-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm sm:text-base font-bold"
+                      style={{ color: '#F69111' }}>
+                      <Images className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="japanese">全{images.length}枚</span>
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-2">
@@ -364,6 +373,20 @@ export default function PostCard({ post }: PostCardProps) {
 
               {/* 画像エリア - モバイルで上部、PCで左側 */}
               <div className="w-full md:w-1/2 overflow-y-auto p-3 sm:p-4 md:p-6 lg:p-8" style={{ backgroundColor: '#FAFDFF' }}>
+              {/* 画像枚数ヘッダー */}
+              <div className="mb-4 flex items-center justify-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-bold"
+                  style={{ 
+                    backgroundColor: images.length > 1 ? '#E53647' : '#FFC700',
+                    color: '#FAFDFF'
+                  }}>
+                  <Images className="w-5 h-5" />
+                  <span className="japanese text-sm sm:text-base">
+                    {images.length === 1 ? '画像1枚' : `全${images.length}枚の画像`}
+                  </span>
+                </div>
+              </div>
+
               {images.length === 1 ? (
                 <div className="h-full min-h-[200px] sm:min-h-[300px] flex items-center justify-center scale-in">
                   <img
@@ -431,6 +454,22 @@ export default function PostCard({ post }: PostCardProps) {
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 md:mb-8 japanese leading-tight" style={{ color: '#011623' }}>
                   {post.title}
                 </h1>
+
+                {/* 画像枚数表示 */}
+                {images.length > 0 && (
+                  <div className="mb-4 sm:mb-6 flex items-center gap-3">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm sm:text-base"
+                      style={{ 
+                        backgroundColor: images.length > 1 ? '#E53647' : '#FFC700',
+                        color: '#FAFDFF'
+                      }}>
+                      <Images className="w-5 h-5" />
+                      <span className="japanese">
+                        {images.length === 1 ? '画像1枚' : `全${images.length}枚の画像`}
+                      </span>
+                    </div>
+                  </div>
+                )}
               
                 {post.content && (
                   <div className="mb-6 sm:mb-8 md:mb-10 whitespace-pre-wrap japanese text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed" style={{ color: '#011623' }}>
