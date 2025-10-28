@@ -1,0 +1,12 @@
+開発サーバーを再起動してください
+
+1. Ctrl+C でサーバーを停止（既に停止している場合はスキップ）
+2. 以下を実行：
+
+cd C:\Users\yuhei\Desktop\00000\bulletin-board
+npm run dev
+
+3. ブラウザで Ctrl+Shift+R でハードリフレッシュ
+4. ログインを試行
+5. コンソールで「Response received」のログを確認
+
