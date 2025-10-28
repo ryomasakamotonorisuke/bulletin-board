@@ -128,20 +128,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    console.log('Sign in attempt:', email)
+    console.log('=== Login Start ===')
+    console.log('Email:', email)
+    
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      console.log('Calling signInWithPassword...')
+      const result = await supabase.auth.signInWithPassword({
         email,
         password,
       })
       
-      if (error) {
-        console.error('Login error:', error.message, error)
-        return { error }
+      console.log('Result received:', result)
+      
+      if (result.error) {
+        console.error('Login error:', result.error.message)
+        return { error: result.error }
       }
 
-      console.log('Login successful, data:', data)
-      console.log('Session:', await supabase.auth.getSession())
+      console.log('Login successful!')
+      console.log('User:', result.data.user?.id)
+      
+      // セッションを確認
+      const { data: sessionData } = await supabase.auth.getSession()
+      console.log('Session:', sessionData.session?.user?.id)
+      
       return { error: null }
     } catch (err) {
       console.error('Login exception:', err)
