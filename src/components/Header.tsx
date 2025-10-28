@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useAdmin } from '@/hooks/useAdmin'
-import { LogOut, Plus, User, Shield, Search, Filter, RefreshCw } from 'lucide-react'
+import { LogOut, Plus, User, Shield, Search, Filter, RefreshCw, Settings } from 'lucide-react'
 import Link from 'next/link'
 
 interface HeaderProps {
@@ -109,6 +109,14 @@ export default function Header({
                     <div className="font-medium">{user?.full_name || 'ユーザー'}</div>
                     <div className="text-gray-500">{user?.email}</div>
                   </div>
+                  <Link
+                    href="/settings"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowUserMenu(false)}
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    アカウント設定
+                  </Link>
                   {isAdmin && (
                     <Link
                       href="/admin"

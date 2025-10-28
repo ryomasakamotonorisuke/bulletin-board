@@ -9,13 +9,11 @@ interface AuthContextType {
   user: AppUser | null
   session: Session | null
   loading: boolean
-  requiresPasswordChange: boolean
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<{ error: any }>
-  updatePassword: (password: string) => Promise<{ error: any }>
-  markPasswordChanged: () => Promise<void>
+  updatePassword: (currentPassword: string, newPassword: string) => Promise<{ error: any }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -24,7 +22,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const [requiresPasswordChange, setRequiresPasswordChange] = useState(false)
 
   useEffect(() => {
     // 1秒で強制的にローディング終了（軽量化）
@@ -163,11 +160,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           } 
         }
       }
-
-      // 初回ログイン時パスワード変更が必要
-      if (profile && !profile.password_changed) {
-        setRequiresPasswordChange(true)
-      }
     }
 
     return { error: null }
@@ -197,50 +189,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error }
   }
 
-  const updatePassword = async (password: string) => {
-    const { error } = await supabase.auth.updateUser({
-      password: password
-    })
-    
-    if (!error && user) {
-      // パスワード変更フラグを更新（エラーハンドリング）
-      try {
-        await supabase
-          .from('profiles')
-          .update({ password_changed: true })
-          .eq('id', user.id)
-        setRequiresPasswordChange(false)
-        if (user) {
-          setUser({ ...user, password_changed: true })
-        }
-      } catch (err) {
-        console.log('Profile update error:', err)
-        // エラーでもパスワード変更は成功
-        setRequiresPasswordChange(false)
-        if (user) {
-          setUser({ ...user, password_changed: true })
-        }
+  const updatePassword = async (currentPassword: string, newPassword: string) => {
+    try {
+      // 現在のパスワードを確認
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        return { error: { message: 'セッションが無効です。再度ログインしてください。' } }
       }
-    }
-    
-    return { error }
-  }
 
-  const markPasswordChanged = async () => {
-    if (user) {
-      try {
-        await supabase
-          .from('profiles')
-          .update({ password_changed: true })
-          .eq('id', user.id)
-      } catch (err) {
-        console.log('Profile update error:', err)
+      // Supabaseの認証情報を更新
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      })
+      
+      if (error) {
+        return { error }
+      }
+
+      // パスワード変更フラグを更新
+      if (user) {
+        try {
+          await supabase
+            .from('profiles')
+            .update({ password_changed: true })
+            .eq('id', user.id)
+          
+          if (user) {
+            setUser({ ...user, password_changed: true })
+          }
+        } catch (err) {
+          console.log('Profile update error:', err)
+        }
       }
       
-      setRequiresPasswordChange(false)
-      if (user) {
-        setUser({ ...user, password_changed: true })
-      }
+      return { error: null }
+    } catch (err: any) {
+      return { error: { message: err.message || 'パスワードの変更に失敗しました' } }
     }
   }
 
@@ -248,13 +232,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     session,
     loading,
-    requiresPasswordChange,
     signIn,
     signUp,
     signOut,
     resetPassword,
     updatePassword,
-    markPasswordChanged,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
