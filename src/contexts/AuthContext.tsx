@@ -136,31 +136,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('Anon Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '設定済み' : '未設定')
     
     try {
-      console.log('Calling signInWithPassword...')
+      console.log('📤 Sending login request...')
       
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const response = await supabase.auth.signInWithPassword({
         email,
         password,
       })
       
-      console.log('✅ Result received')
-      console.log('Error:', error?.message)
-      console.log('Data:', data)
-      console.log('User:', data?.user?.id)
+      console.log('📥 Response received')
+      console.log('response.error:', response.error)
+      console.log('response.data:', response.data)
       
-      if (error) {
-        console.error('❌ Login error:', error.message)
-        return { error }
+      if (response.error) {
+        console.error('❌ Login failed:', response.error.message)
+        return { error: response.error }
       }
 
-      console.log('✅ Login successful!')
-      console.log('User ID:', data?.user?.id)
-      console.log('Session exists:', !!data?.session)
+      console.log('✅ Login successful')
+      console.log('User:', response.data?.user?.email)
       
       return { error: null }
     } catch (err) {
-      console.error('Login exception:', err)
-      return { error: { message: 'ログイン中にエラーが発生しました' } }
+      console.error('💥 Exception:', err)
+      return { error: { message: String(err) } }
     }
   }
 
