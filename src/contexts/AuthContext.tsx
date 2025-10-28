@@ -101,19 +101,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session)
         
         if (session?.user) {
+          console.log('📝 Fetching profile for user:', session.user.id)
           let profile = null
           try {
-            const { data } = await supabase
+            const { data, error: profileError } = await supabase
               .from('profiles')
               .select('username, full_name, avatar_url, user_id, role, is_admin, is_employee, is_active, password_changed')
               .eq('id', session.user.id)
               .single()
-            profile = data
+            
+            if (profileError) {
+              console.log('⚠️ Profile fetch error on change:', profileError)
+            } else {
+              profile = data
+              console.log('✅ Profile fetched on change:', profile)
+            }
           } catch (err) {
-            console.log('⚠️ Profile fetch error on change:', err)
+            console.log('⚠️ Profile fetch exception on change:', err)
           }
           
-          setUser({
+          const userData = {
             id: session.user.id,
             email: session.user.email,
             username: profile?.username || null,
@@ -125,10 +132,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             is_employee: profile?.is_employee || false,
             is_active: profile?.is_active !== undefined ? profile.is_active : true,
             password_changed: profile?.password_changed !== undefined ? profile.password_changed : true,
-          })
+          }
+          
+          console.log('✅ Setting user:', userData)
+          setUser(userData)
+          console.log('✅ User set complete')
         } else {
+          console.log('ℹ️ No user in session')
           setUser(null)
         }
+        console.log('🏁 Setting loading to false')
         setLoading(false)
       }
     )
